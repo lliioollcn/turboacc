@@ -91,18 +91,11 @@ jobs:
             working-directory: ${{ env.OPENWRT_ROOT_PATH }}
             run: |
               if [ "${{ matrix.tag_branche }}" = "master-k6.6" ]; then
-                echo "CONFIG_TARGET_x86=y" >> $OPENWRT_ROOT_PATH/.config
-                echo "CONFIG_TARGET_x86_64=y" >> $OPENWRT_ROOT_PATH/.config
-                echo "CONFIG_LINUX_6_6=y" >> $OPENWRT_ROOT_PATH/.config
-                echo "CONFIG_TESTING_KERNEL=y" >> $OPENWRT_ROOT_PATH/.config
+                echo "CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_xiaomi_mi-router-ax3000t=y" >> $OPENWRT_ROOT_PATH/.config
               elif [ "${{ matrix.compile }}" = "SHORTCUT_FE_DRV" ]; then
-                echo "CONFIG_TARGET_ipq807x=y" >> $OPENWRT_ROOT_PATH/.config
-                echo "CONFIG_TARGET_ipq807x_generic=y" >> $OPENWRT_ROOT_PATH/.config
-                echo "CONFIG_TARGET_ipq807x_generic_DEVICE_redmi_ax6=y" >> $OPENWRT_ROOT_PATH/.config
+                echo "CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_xiaomi_mi-router-ax3000t=y" >> $OPENWRT_ROOT_PATH/.config
               else
-                echo "CONFIG_TARGET_x86=y" >> $OPENWRT_ROOT_PATH/.config
-                echo "CONFIG_TARGET_x86_64=y" >> $OPENWRT_ROOT_PATH/.config
-                echo "CONFIG_TARGET_x86_64_DEVICE_generic=y" >> $OPENWRT_ROOT_PATH/.config
+                echo "CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_xiaomi_mi-router-ax3000t=y" >> $OPENWRT_ROOT_PATH/.config
               fi
               make defconfig
               
