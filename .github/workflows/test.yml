@@ -15,12 +15,8 @@ jobs:
       fail-fast: false
       max-parallel: 8
       matrix:
-        tag_branche: [master-k6.6,master-k6.1,openwrt-23.05,openwrt-22.03]
-        compile: [FLOW_OFFLOAD,SHORTCUT_FE,SHORTCUT_FE_CM,SHORTCUT_FE_DRV]
-        exclude:
-          - tag_branche: master-5.15
-            compile: SHORTCUT_FE_DRV
-          #master分支没有可用支持SHORTCUT_FE_DRV的5.15内核架构
+        tag_branche: [openwrt-23.05]
+        compile: [SHORTCUT_FE]
     steps:
           - name: 将存储库签出到运行器
             uses: actions/checkout@v3
@@ -90,13 +86,7 @@ jobs:
           - name: 生成配置文件
             working-directory: ${{ env.OPENWRT_ROOT_PATH }}
             run: |
-              if [ "${{ matrix.tag_branche }}" = "master-k6.6" ]; then
-                echo "CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_xiaomi_mi-router-ax3000t=y" >> $OPENWRT_ROOT_PATH/.config
-              elif [ "${{ matrix.compile }}" = "SHORTCUT_FE_DRV" ]; then
-                echo "CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_xiaomi_mi-router-ax3000t=y" >> $OPENWRT_ROOT_PATH/.config
-              else
-                echo "CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_xiaomi_mi-router-ax3000t=y" >> $OPENWRT_ROOT_PATH/.config
-              fi
+              echo "CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_xiaomi_mi-router-ax3000t=y" >> $OPENWRT_ROOT_PATH/.config
               make defconfig
               
           - name: 添加turboacc
@@ -132,45 +122,14 @@ jobs:
               echo "compile = "${{ matrix.compile }}
               rm -rf .config .config.old tmp
               ls -la
-              if [ "${{ matrix.tag_branche }}" = "master-k6.6" ]; then
-                echo "CONFIG_TARGET_x86=y" >> $OPENWRT_ROOT_PATH/.config
-                echo "CONFIG_TARGET_x86_64=y" >> $OPENWRT_ROOT_PATH/.config
-                echo "CONFIG_LINUX_6_6=y" >> $OPENWRT_ROOT_PATH/.config
-                echo "CONFIG_TESTING_KERNEL=y" >> $OPENWRT_ROOT_PATH/.config
-              elif [ "${{ matrix.compile }}" = "SHORTCUT_FE_DRV" ]; then
-                echo "CONFIG_TARGET_ipq807x=y" >> $OPENWRT_ROOT_PATH/.config
-                echo "CONFIG_TARGET_ipq807x_generic=y" >> $OPENWRT_ROOT_PATH/.config
-                echo "CONFIG_TARGET_ipq807x_generic_DEVICE_redmi_ax6=y" >> $OPENWRT_ROOT_PATH/.config
-              else
-                echo "CONFIG_TARGET_x86=y" >> $OPENWRT_ROOT_PATH/.config
-                echo "CONFIG_TARGET_x86_64=y" >> $OPENWRT_ROOT_PATH/.config
-                echo "CONFIG_TARGET_x86_64_DEVICE_generic=y" >> $OPENWRT_ROOT_PATH/.config
-              fi
+              echo "CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_xiaomi_mi-router-ax3000t=y" >> $OPENWRT_ROOT_PATH/.config
               echo 'CONFIG_PACKAGE_luci-app-turboacc=y' >> .config
               echo 'CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_BBR_CCA=y' >> .config
               echo 'CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_NFT_FULLCONE=y' >> .config
-              if [ "${{ matrix.compile }}" = "FLOW_OFFLOAD" ]; then
-                echo "FLOW_OFFLOAD"
-                echo 'CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_OFFLOADING=y' >> .config
-                echo 'CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_SHORTCUT_FE=n' >> .config
-                echo 'CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_SHORTCUT_FE_CM=n' >> .config
-              elif [ "${{ matrix.compile }}" = "SHORTCUT_FE" ]; then
-                echo "SHORTCUT_FE"
-                echo 'CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_OFFLOADING=n' >> .config
-                echo 'CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_SHORTCUT_FE=y' >> .config
-                echo 'CONFIG_PACKAGE_kmod-shortcut-fe-cm=n' >> .config
-              elif [ "${{ matrix.compile }}" = "SHORTCUT_FE_CM" ]; then
-                echo "SHORTCUT_FE_CM"
-                echo 'CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_OFFLOADING=n' >> .config
-                echo 'CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_SHORTCUT_FE_CM=y' >> .config
-              elif [ "${{ matrix.compile }}" = "SHORTCUT_FE_DRV" ]; then
-                echo "SHORTCUT_FE_DRV"
-                echo 'CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_OFFLOADING=n' >> .config
-                echo "CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_SHORTCUT_FE_DRV=y" >> $OPENWRT_ROOT_PATH/.config
-              else
-                echo "compile = "${{ matrix.compile }}
-                exit 1
-              fi
+              echo "SHORTCUT_FE"
+              echo 'CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_OFFLOADING=n' >> .config
+              echo 'CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_SHORTCUT_FE=y' >> .config
+              echo 'CONFIG_PACKAGE_kmod-shortcut-fe-cm=n' >> .config
               echo ".config"
               cat .config
               make defconfig
